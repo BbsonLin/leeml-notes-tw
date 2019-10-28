@@ -1,4 +1,4 @@
-## 迴歸-實際展示
+# 迴歸-實際展示
 
 程式碼可到此觀看 => https://github.com/BbsonLin/leeml-notes-tw-demo/blob/master/chapter4/Regression.ipynb
 
@@ -87,6 +87,8 @@ Z: [[5192293.4        5188421.2        5184551.         ... 4826002.
 
 --
 
+## 第一次試做 Gradient Descent
+
 先設定 w 和 b 的初始值，接著用 Gradient Descent，求出 Loss function 最佳解 。  
 利用前一章的 [w 和 b 偏微分的計算方法](/chapter3/chapter3?id=w-和-b-偏微分的計算方法)，將其數學公式變成 Python 程式碼。
 
@@ -140,6 +142,8 @@ show_gd_plot(b_history, w_history)
 x 軸為 b；y 軸為 w，橘色標記 X 的點為最佳解。很顯然，以上面的參數我們還沒有用 Gradient Descent 得到最佳解。
 
 --
+
+## 調整參數
 
 將 Gradient Descent 的部分包成函數，方便後面調整參數
 

@@ -4,7 +4,7 @@
  - [P3 回归](chapter3/chapter3.md)
  - [Ch4 迴歸-實際展示](chapter4/chapter4.md)
  - [Ch5 誤差從哪裡來的?](chapter5/chapter5.md)
- - [P6 梯度下降](chapter6/chapter6.md)
+ - [Ch6 梯度下降](chapter6/chapter6.md)
  - [P7 梯度下降（用AOE演示）](chapter7/chapter7.md)
  - [P8 梯度下降（用Minecraft演示）](chapter8/chapter8.md)
  - [P9 作业1-PM2.5预测](chapter9/chapter9.md)

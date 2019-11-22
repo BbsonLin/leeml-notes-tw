@@ -191,6 +191,141 @@ $\mu$ 不同，$\Sigma$ 相同
 給一個不在 79 個點之內的新點，就可以用剛才估測出的 $\mu$ 和 $\Sigma$ 寫出高斯分佈的函數 $f_{\mu,\Sigma}(x)$，然後把 $x$ 帶進去，計算出被挑選出來的機率。
 
 
-### 最大似然值
+### 最大似然值(Maximum Likelihood)
 
 如何找高斯分佈函數中的 $\mu$ 和 $\Sigma$ 呢?
+
+![](res/chapter8-16.png)
+
+我們所取樣的 79 個資料，可能是從任何一個高斯分佈取樣出來的。(因為任何高斯分佈都有可能取樣出圖上的任何一點，只是機率高低不同而已)
+
+不過每一個高斯分佈能取樣出這 79 個點的機率是不一樣的，所以我們需要利用這 79 個點來找出最有可能取樣出他們的高斯分佈。
+
+$L(\mu,\Sigma) = f_{\mu,\Sigma}(x^1)f_{\mu,\Sigma}(x^2) ... f_{\mu,\Sigma}(x^79)$
+
+> $L(\mu,\Sigma)$: 似然函數(Likelihood function)
+> $f_{\mu,\Sigma}(x) = \cfrac{1}{(2\pi)^{D/2}} \cfrac{1}{|\Sigma|^{1/2}} \exp \left\{ -\cfrac{1}{2}(x-\mu)^T\Sigma^{-1}(x-\mu) \right\}$
+
+$( \mu^*, \Sigma^* ) = arg \max_{\mu,\Sigma}L(\mu,\Sigma)$
+
+> $( \mu^*, \Sigma^* )$: 為最有可能高斯分布的 $\mu$ 和 $\Sigma$
+
+--
+
+以 79 個點為例，$(x^1, ..., x^{79})$ 帶入分別對 $\mu,\Sigma$ 取偏微分，解微分為 0 的值。
+
+$\mu^* = \cfrac{1}{79} \Sigma_{n=1}^{79} x^n$
+
+$\Sigma^* = \cfrac{1}{79} \Sigma_{n=1}^{79} (x^n-\mu^*)(x^n-\mu^*)^T$
+
+### 使用高斯分布與最大似然值
+
+![](res/chapter8-17.png)
+
+將實際資料帶進前一節的 $(\mu^*, \Sigma^*)$，分別得出水系和一般系寶可夢最大似然值中的 $(\mu,\Sigma)$。
+
+得知 $(\mu,\Sigma)$ 後便可求出 $P(x|C_1), P(x|C_2)$ (高斯分布函數)，進而得出 $P(C_1|x)$
+
+![](res/chapter8-18.png)
+
+接下來我們作圖將並顯現在參數 `Defense` 和 `SP Defense` 的分類效果。
+
+![](res/chapter8-19.png)
+
+藍色點代表水系寶可夢，紅色點代表一般系寶可夢。  
+紅色區代表被分類成水系，藍色區代表被分類成一般系。
+
+雖然水系大部分有被分在紅色區，一般系大部分有被分在藍色區，不過在測試集上表現就不行了。(用肉眼看其實就很明顯)
+
+那我們把剩下的參數(HP、攻擊力...等)都考慮進去，變成七維空間的分類呢?
+
+很可惜，做出來不盡人意，只有 54% 的正確率...
+
+### 修改模型
+
+前面所使用的模型似乎不盡理想，那要怎麼辦呢?
+
+其實前述的方法；給每個分類完全不同的高斯分布的參數是不常見到的...  
+Class1 是 ($\mu^1,\Sigma^1$)；Class2 是 ($\mu^2,\Sigma^2$) 參數太多了。
+
+比較常見的方式會給每個分類同一個 $\Sigma$ (covariance)
+
+![](res/chapter8-20.png)
+
+修改前的做法會針對每個分類列出自己的 $L(\mu,\Sigma)$ 進而算出 $(\mu,\Sigma)$。
+
+修改後，必須把分類合併考慮列出 $L(\mu^1,\mu^2,\Sigma)$ 進而算出 $(\mu^1,\mu^2,\Sigma)$。  
+其中，$\Sigma = \cfrac{79}{140} \Sigma^1 + \cfrac{61}{140} \Sigma^2$
+
+--
+
+![](res/chapter8-21.png)
+
+共用同一個 $\Sigma$ 後，參數 `Defense` 和 `SP Defense` 的分類界線會變成 linear 的(lineal model)。
+
+在七個參數，七維空間上的分類準確率也提升至 73%。
+
+> 我們人無法馬上在高維空間中找到適當得分類界線，但機器可以。
+> 這也是機器學習 fancy 的地方。
+
+---
+
+## 分類模型三步驟
+
+在第三章的時候有討論到(線性)回歸模型三步驟，這邊依照同樣的步驟邏輯，套用在分類模型上。
+
+### Step1: 模型假設 - 機率模型
+
+![](res/chapter8-22.png)
+
+模型的函數為 $P(C_1|x) = \cfrac{ P(x|C_1)P(C_1)} {P(x|C_1)P(C_1) + P(x|C_2)P(C_2) }$ 
+
+### Step2: 模型評估 - 最大似然值
+
+![](res/chapter8-23.png)
+
+找一組 $(\mu,\Sigma)$ 最有可能取樣(產出)出資料
+
+### Step3: 最佳模型
+
+過程相當繁瑣，但容易(微分就可取得)
+
+--
+
+那麼為何要選擇高斯分布來當機率模型呢?
+
+其實沒有一定要用高斯分布，你永遠可以選擇喜歡的機率模型，差別只會在 `bias` 和 `variance` 的大小。
+
+
+
+
+## 後驗機率 (Posterior Probability)
+
+> 先驗機率(Prior Probability)：事件發生前的預判機率。可以是基於歷史數據的統計，可以由背景常識得出，也可以是人的主觀觀點給出。一般都是單獨事件機率，如P(x),P(y)。  
+> 後驗機率(Posterior Probability)：事件發生後求的反向條件機率；或者說，基於先驗機率求得的反向條件機率。機率形式與條件機率相同。  
+> 條件機率：一個事件發生後另一個事件發生的機率。一般的形式為P(x|y)表示y發生的條件下x發生的機率。
+>
+> 原文網址：https://kknews.cc/code/qomypno.html
+
+
+$
+\begin{aligned} 
+P(C_1|x) &= \cfrac{P(x|C_1)P(C_1)} {P(x|C_1)P(C_1) + P(x|C_2)P(C_2) } [同除分子 P(x|C_1)P(C_1)] \\
+&= \cfrac{1}{1+\cfrac{P(x|C_2)P(C_2)}{P(x|C_1)P(C_1)}} [令 z=\ln\cfrac{P(x|C_1)P(C_1)}{P(x|C_2)P(C_2)}] \\
+&= \cfrac{1}{1+\exp(-z)} = \sigma(z)
+\end{aligned} 
+$
+
+> $\sigma(z)$: Sigmoid Function
+>
+> ![](res/chapter8-24.png)
+
+--
+
+一番數學推導後，(可參考影片[ML Lecture 4: Classification - 1:01:05](https://youtu.be/fZAZUYEeIMg?t=3665))
+
+$P(C_1|x) = \sigma(z) = \sigma(w \cdot x + b))$
+
+那我們何須再算 $(\mu,\Sigma)$，能直接找出 $w$ 和 $b$ 嗎?
+
+下回分曉~
